@@ -1,0 +1,86 @@
+{
+    "description": "Build base Alpine Linux x86_64",
+    "variables": {
+        "disk_size": "40000",
+        "memory": "1024",
+        "cpus": "1"
+    },
+    "builders": [
+        {
+            "type": "virtualbox-iso",
+            "virtualbox_version_file": ".vbox_version",
+            "guest_additions_mode": "disable",
+            "guest_os_type": "Linux26_64",
+            "headless": false,
+            "disk_size": "{{user `disk_size`}}",
+            "http_directory": "http",
+            "iso_urls": [
+                "alpine-virt-3.6.2-x86_64.iso",
+                "http://dl-cdn.alpinelinux.org/alpine/v3.6/releases/x86_64/alpine-virt-3.6.2-x86_64.iso"
+            ],
+            "iso_checksum_url": "http://dl-cdn.alpinelinux.org/alpine/v3.6/releases/x86_64/alpine-virt-3.6.2-x86_64.iso.sha256",
+            "iso_checksum_type": "sha256",
+            "communicator": "ssh",
+            "ssh_username": "root",
+            "ssh_password": "vagrant",
+            "ssh_wait_timeout": "10m",
+            "shutdown_command": "/sbin/poweroff",
+            "boot_wait": "30s",
+            "boot_command": [
+                "root<enter><wait>",
+                "ifconfig eth0 up && udhcpc -i eth0<enter><wait10>",
+                "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/answers<enter><wait>",
+                "setup-alpine -f answers<enter><wait5>",
+                "vagrant<enter><wait>",
+                "vagrant<enter><wait>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",                
+                "y<enter>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",                
+                "rc-service sshd stop<enter>",
+                "mount /dev/sda3 /mnt<enter>",
+                "echo 'PermitRootLogin yes' >> /mnt/etc/ssh/sshd_config<enter>",
+                "umount /mnt<enter>",
+                "reboot<enter>"
+            ],
+            "hard_drive_interface": "sata",
+            "vboxmanage": [
+                [
+                    "modifyvm",
+                    "{{.Name}}",
+                    "--memory",
+                    "{{user `memory`}}"
+                ],
+                [
+                    "modifyvm",
+                    "{{.Name}}",
+                    "--cpus",
+                    "{{user `cpus`}}"
+                ]
+            ]
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "script": "provisioners/shell/dependencies.sh",
+            "override": {
+                "virtualbox-iso": {
+                    "execute_command": "/bin/sh '{{.Path}}'"
+                }
+            }
+        }
+    ]
+}
