@@ -1,7 +1,9 @@
 # Cache objects
 packer_cache/
 
-# For built boxes
+# For images and built boxes
 *.box
 *.ovf
 *.vmdk
+*.iso
+*.checksum

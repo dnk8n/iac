@@ -1,0 +1,87 @@
+{
+  "description": "Build base Alpine Linux (3.6) x86_64",
+  "variables": {
+    "iso_remote_path": "http://dl-cdn.alpinelinux.org/alpine/v3.6/releases/x86_64",
+    "iso_name": "alpine-virt-3.6.2-x86_64.iso",
+    "vm_name": "base-alpine",
+    "disk_size": "40000",
+    "memory": "1024",
+    "cpus": "1",
+    "temp_password": "WHDaejqvj3D8vEdS"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Linux26_64",
+      "vm_name": "{{ user `vm_name` }}",
+      "iso_url": "{{ user `iso_remote_path` }}/{{ user `iso_name` }}",
+      "iso_checksum_url": "{{ user `iso_remote_path` }}/{{ user `iso_name` }}.sha256",
+      "iso_checksum_type": "sha256",
+      "iso_target_path": "{{ template_dir }}/artifacts/iso/{{ user `iso_name` }}",
+      "output_directory": "{{ template_dir }}/artifacts/ovf/{{ user `vm_name` }}",
+      "virtualbox_version_file": ".vbox_version",
+      "guest_additions_mode": "disable",
+      "headless": false,
+      "disk_size": "{{ user `disk_size` }}",
+      "hard_drive_interface": "sata",
+      "iso_interface": "sata",
+      "http_directory": "{{ template_dir }}/http",
+      "communicator": "ssh",
+      "ssh_username": "root",
+      "ssh_password": "{{ user `temp_password` }}",
+      "ssh_wait_timeout": "10m",
+      "shutdown_command": "/sbin/poweroff",
+      "boot_wait": "30s",
+      "boot_command": [
+        "root<enter><wait>",
+        "ifconfig eth0 up && udhcpc -i eth0<enter><wait10>",
+        "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/answers<enter><wait>",
+        "setup-alpine -f answers<enter><wait5>",
+        "{{ user `temp_password` }}<enter><wait>",
+        "{{ user `temp_password` }}<enter><wait>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "y<enter>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "rc-service sshd stop<enter>",
+        "mount /dev/sda3 /mnt<enter>",
+        "echo 'PermitRootLogin yes' >> /mnt/etc/ssh/sshd_config<enter>",
+        "umount /mnt<enter>",
+        "reboot<enter>"
+      ],
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "{{user `memory`}}"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "{{user `cpus`}}"
+        ]
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "checksum",
+      "checksum_types": "sha256",
+      "output": "{{ template_dir }}/artifacts/ovf/{{ user `vm_name` }}/{{ user `vm_name` }}.{{.ChecksumType}}.checksum"
+    }
+  ]
+}
