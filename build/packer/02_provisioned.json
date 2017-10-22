@@ -1,1 +1,50 @@
-{}
+{
+  "description": "Kaggle Python/Jupyter Docker Environment within Alpine Linux (3.6) x86_64 virtual machine",
+  "variables": {
+    "source_path": "{{ template_dir }}/artifacts/ovf/alpine-with-dependencies/alpine-with-dependencies.ovf",
+    "vm_name": "alpine-with-kaggle-python",
+    "temp_password": "WHDaejqvj3D8vEdS"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "vm_name": "{{ user `vm_name` }}",
+      "source_path": "{{ user `source_path` }}",
+      "communicator": "ssh",
+      "ssh_username": "root",
+      "ssh_password": "{{ user `temp_password` }}",
+      "output_directory": "{{ template_dir }}/artifacts/ovf/{{ user `vm_name` }}",
+      "virtualbox_version_file": ".vbox_version",
+      "guest_additions_mode": "disable",
+      "shutdown_command": "/sbin/poweroff"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{ template_dir }}/03_kaggle-python.json",
+      "destination": "/tmp/03_kaggle-python.json"
+    },
+    {
+      "type": "file",
+      "source": "{{ template_dir }}/provisioners/ansible-local/playbook.yml",
+      "destination": "/tmp/playbook.yml"
+    },
+    {
+      "type": "shell",
+      "script": "{{ template_dir }}/provisioners/shell/kaggle-python.sh",
+      "override": {
+        "virtualbox-ovf": {
+          "execute_command": "/bin/sh '{{ .Path }}'"
+        }
+      }
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "checksum",
+      "checksum_types": "sha256",
+      "output": "{{ template_dir }}/artifacts/ovf/{{ user `vm_name` }}/{{ user `vm_name` }}.{{ .ChecksumType }}.checksum"
+    }
+  ]
+}

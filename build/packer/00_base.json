@@ -25,7 +25,7 @@
       "disk_size": "{{ user `disk_size` }}",
       "hard_drive_interface": "sata",
       "iso_interface": "sata",
-      "http_directory": "{{ template_dir }}/http",
+      "http_directory": "{{ template_dir }}",
       "communicator": "ssh",
       "ssh_username": "root",
       "ssh_password": "{{ user `temp_password` }}",
@@ -35,7 +35,7 @@
       "boot_command": [
         "root<enter><wait>",
         "ifconfig eth0 up && udhcpc -i eth0<enter><wait10>",
-        "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/answers<enter><wait>",
+        "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/boot-configs/answers<enter><wait>",
         "setup-alpine -f answers<enter><wait5>",
         "{{ user `temp_password` }}<enter><wait>",
         "{{ user `temp_password` }}<enter><wait>",
@@ -64,15 +64,15 @@
       "vboxmanage": [
         [
           "modifyvm",
-          "{{.Name}}",
+          "{{ .Name }}",
           "--memory",
-          "{{user `memory`}}"
+          "{{ user `memory` }}"
         ],
         [
           "modifyvm",
-          "{{.Name}}",
+          "{{ .Name }}",
           "--cpus",
-          "{{user `cpus`}}"
+          "{{ user `cpus` }}"
         ]
       ]
     }
@@ -81,7 +81,7 @@
     {
       "type": "checksum",
       "checksum_types": "sha256",
-      "output": "{{ template_dir }}/artifacts/ovf/{{ user `vm_name` }}/{{ user `vm_name` }}.{{.ChecksumType}}.checksum"
+      "output": "{{ template_dir }}/artifacts/ovf/{{ user `vm_name` }}/{{ user `vm_name` }}.{{ .ChecksumType }}.checksum"
     }
   ]
 }
