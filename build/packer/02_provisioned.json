@@ -13,6 +13,7 @@
       "communicator": "ssh",
       "ssh_username": "root",
       "ssh_password": "{{ user `temp_password` }}",
+      "headless": "true",
       "output_directory": "{{ template_dir }}/artifacts/ovf/{{ user `vm_name` }}",
       "virtualbox_version_file": ".vbox_version",
       "guest_additions_mode": "disable",
