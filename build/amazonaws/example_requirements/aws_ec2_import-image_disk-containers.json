@@ -1,0 +1,10 @@
+[
+  {
+    "Description": "Alpine Linux Import",
+    "Format": "ova",
+    "UserBucket": {
+      "S3Bucket": "dnk8n.packer",
+      "S3Key": "packer-import-1510493555.ova"
+    }
+  }
+]
