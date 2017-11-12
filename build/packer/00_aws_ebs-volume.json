@@ -2,7 +2,6 @@
   "variables": {
     "region": "{{env `region`}}",
     "availability_zone": "{{env `availability_zone`}}",
-    "source_ami": "{{env `source_ami`}}",
     "instance_type": "{{env `instance_type`}}",
     "ssh_username": "{{env `ssh_username`}}",
     "device_name": "/dev/xvdf",
@@ -18,7 +17,17 @@
       "availability_zone": "{{user `availability_zone`}}",
       "ssh_username": "{{user `ssh_username`}}",
       "instance_type": "{{user `instance_type`}}",
-      "source_ami": "{{user `source_ami`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "099720109477"
+        ],
+        "most_recent": true
+      },
       "ebs_volumes": [
         {
           "volume_type": "gp2",
