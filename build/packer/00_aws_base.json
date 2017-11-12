@@ -55,12 +55,19 @@
       "destination": "/tmp/grub.conf"
     },
     {
+      "type": "file",
+      "source": "{{ template_dir }}/provisioners/file/alpine-amazon.apkovl.tar.gz.b64",
+      "destination": "/tmp/amazon.apkovl.tar.gz.b64"
+    },
+    {
+      "type": "file",
+      "source": "{{ template_dir }}/provisioners/file/alpine-amazon.apkovl.tar.gz.md5.checksum",
+      "destination": "/tmp/amazon.apkovl.tar.gz.md5.checksum"
+    },
+    {
       "type": "shell",
       "execute_command": "sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
-      "inline": [
-        "mv /tmp/grub.conf target/boot/grub/grub.conf",
-        "ln -sf target/boot/grub/grub.conf target/boot/grub/menu.lst"
-      ]
+      "script": "{{ template_dir }}/provisioners/shell/alpine_ebs-volume.sh"
     }
   ]
 }
