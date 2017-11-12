@@ -7,3 +7,6 @@ packer_cache/
 *.vmdk
 *.iso
 *.checksum
+
+# IDE-specific
+.idea/
