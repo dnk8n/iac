@@ -1,0 +1,7 @@
+{
+  "region": "eu-west-1",
+  "availability_zone": "eu-west-1a",
+  "source_ami": "ami-add175d4",
+  "instance_type": "t2.micro",
+  "ssh_username": "ubuntu"
+}

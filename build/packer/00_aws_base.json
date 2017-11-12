@@ -1,0 +1,66 @@
+{
+  "variables": {
+    "region": "{{env `region`}}",
+    "availability_zone": "{{env `availability_zone`}}",
+    "source_ami": "{{env `source_ami`}}",
+    "instance_type": "{{env `instance_type`}}",
+    "ssh_username": "{{env `ssh_username`}}",
+    "device_name": "/dev/xvdf",
+    "iso_remote_path": "http://dl-cdn.alpinelinux.org/alpine/v3.6/releases/x86_64",
+    "iso_name": "alpine-virt-3.6.2-x86_64.iso"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebsvolume",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `region`}}",
+      "availability_zone": "{{user `availability_zone`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "instance_type": "{{user `instance_type`}}",
+      "source_ami": "{{user `source_ami`}}",
+      "ebs_volumes": [
+        {
+          "volume_type": "gp2",
+          "device_name": "{{user `device_name`}}",
+          "delete_on_termination": false,
+          "tags": {
+            "Name": "alpine-base"
+          },
+          "volume_size": 16
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+      "inline": [
+        "mke2fs -t ext4 {{user `device_name`}}",
+        "wget {{ user `iso_remote_path` }}/{{ user `iso_name` }}",
+        "mkdir target",
+        "mkdir source",
+        "mount {{user `device_name`}} target",
+        "mount -o loop {{ user `iso_name` }} source",
+        "cp -av source/boot target",
+        "cp -av source/apks target",
+        "umount source",
+        "mkdir -p target/boot/grub"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{ template_dir }}/provisioners/file/alpine-grub.conf",
+      "destination": "/tmp/grub.conf"
+    },
+    {
+      "type": "shell",
+      "execute_command": "sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+      "inline": [
+        "mv /tmp/grub.conf target/boot/grub/grub.conf",
+        "ln -sf target/boot/grub/grub.conf target/boot/grub/menu.lst"
+      ]
+    }
+  ]
+}
