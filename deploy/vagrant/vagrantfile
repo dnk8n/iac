@@ -1,0 +1,13 @@
+Vagrant.configure("2") do |config|
+  config.ssh.username = "root"
+  config.ssh.password = "WHDaejqvj3D8vEdS"
+  config.ssh.shell = "ash"
+  config.vm.box = "kjupyter"
+  config.vm.box_url = "file:///home/dean/src/personal/iac/build/packer/artifacts/vagrant/box/alpine-with-kaggle-python.box"
+  config.vm.network "forwarded_port", guest: 8888, host: 8888, guest_ip: "0.0.0.0", host_ip: "0.0.0.0"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.provision "start_kjupyter", type: "shell" do |s|
+    s.privileged = false
+    s.inline = "su - user -s /bin/sh -c 'docker run -v $PWD:/tmp/working -w=/tmp/working -p 8888:8888 --rm -t dnk8n/kaggle-python:latest jupyter notebook --no-browser --ip=0.0.0.0 --notebook-dir=/tmp/working'"
+  end
+end
