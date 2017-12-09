@@ -1,0 +1,25 @@
+{
+  "builders": [
+    {
+      "type": "docker",
+      "image": "kaggle/python",
+      "pull": true,
+      "commit": "true"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "{{ template_dir }}/provisioners/shell/kaggle-python-alterations.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "dnk8n/kaggle-python-base",
+        "tag": "latest"
+      }
+    ]
+  ]
+}

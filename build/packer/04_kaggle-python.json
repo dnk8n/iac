@@ -6,7 +6,8 @@
   "builders": [
     {
       "type": "docker",
-      "image": "kaggle/python",
+      "image": "dnk8n/kaggle-python-base",
+      "pull": false,
       "commit": "true",
       "changes": [
         "USER kuser"
