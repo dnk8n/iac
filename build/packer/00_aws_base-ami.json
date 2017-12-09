@@ -32,14 +32,14 @@
           "volume_type": "gp2",
           "device_name": "{{user `device_name`}}",
           "delete_on_termination": false,
-          "volume_size": 16
+          "volume_size": 1
         }
       ],
       "ami_root_device": {
         "source_device_name": "{{user `device_name`}}",
-        "device_name": "/dev/sda1",
+        "device_name": "/dev/xvda",
         "delete_on_termination": true,
-        "volume_size": 16,
+        "volume_size": 1,
         "volume_type": "gp2"
       }
     }
